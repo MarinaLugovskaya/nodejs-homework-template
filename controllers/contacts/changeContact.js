@@ -1,16 +1,15 @@
-const updateById = require('../../model/contacts/updateById')
-const { contactSchema } = require('../../contactsSchema')
+const { Contact, joiSchema } = require('../../models/contacts')
 
 const changeContact = async (req, res, next) => {
   try {
-    const { error } = contactSchema.validate(req.body)
+    const { error } = joiSchema.validate(req.body)
     if (error) {
       error.status = 400
       throw error
     }
 
     const { contactId } = req.params
-    const contact = await updateById(contactId, req.body)
+    const contact = await Contact.findByIdAndUpdate(contactId, req.body, { new: true })
     if (!contact) {
       const error = new Error('missing fields')
       error.status = 404
