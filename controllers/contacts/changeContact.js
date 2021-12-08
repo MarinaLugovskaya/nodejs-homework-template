@@ -1,13 +1,7 @@
-const { Contact, joiSchema } = require('../../models/contacts')
+const { Contact } = require('../../models/contacts')
 
 const changeContact = async (req, res, next) => {
   try {
-    const { error } = joiSchema.validate(req.body)
-    if (error) {
-      error.status = 400
-      throw error
-    }
-
     const { contactId } = req.params
     const contact = await Contact.findByIdAndUpdate(contactId, req.body, { new: true })
     if (!contact) {
