@@ -1,6 +1,8 @@
+const { v4: uuidv4 } = require('uuid')
 const { Conflict } = require('http-errors')
 
 const { User } = require('../../models')
+const sendEmail = require('../../helpers/sendEmail')
 
 const register = async(req, res) => {
   const { name, email, password } = req.body
@@ -8,18 +10,28 @@ const register = async(req, res) => {
   if (user) {
     throw new Conflict(`User with ${email} already exist`)
   }
-  const newUser = new User({ name, email })
 
-  newUser.setPassword(password)
+  const verificationToken = uuidv4()
+  const newUser = new User({ name, email, verificationToken })
 
-  newUser.save()
+  await newUser.setPassword(password)
+
+  await newUser.save()
+
+  const mail = {
+    to: email,
+    subject: 'подтверждение Email',
+    html: `<a target="_blank" href="http://localhost:3000/api/users/verify/${verificationToken}">Подтвердить email</a>`
+  }
+  await sendEmail(mail)
   res.status(201).json({
-    status: 'success',
-    code: 201,
+    status: '200',
+    message: 'Verification email sent',
     data: {
       user: {
         email,
-        name
+        name,
+        verificationToken
       }
     }
   })

@@ -2,7 +2,7 @@ const { Unauthorized } = require('http-errors')
 const path = require('path')
 const fs = require('fs/promises')
 const { User } = require('../../models')
-const avatarChange = require('../../services/avatar')
+const avatarChange = require('../../helpers/avatar')
 
 const avatarsDir = path.join(__dirname, '../../', 'public', 'avatars')
 
